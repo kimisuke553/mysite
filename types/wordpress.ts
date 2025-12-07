@@ -15,6 +15,10 @@ export interface WordPressPost {
   excerpt: {
     rendered: string;
   };
+  acf?: {
+    custom_field_name: string;
+    // カスタムフィールドを追加
+  };
   author: number;
   featured_media: number;
   categories: number[];
