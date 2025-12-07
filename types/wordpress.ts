@@ -1,5 +1,19 @@
 // WordPress REST API の型定義
 
+// ACF画像フィールドの型定義
+export interface ACFImage {
+  url: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  sizes?: {
+    thumbnail?: string;
+    medium?: string;
+    large?: string;
+    [key: string]: string | undefined;
+  };
+}
+
 export interface WordPressPost {
   id: number;
   date: string;
@@ -34,6 +48,11 @@ export interface WordPressPost {
         [key: string]: string;
       };
     }>;
+  };
+  // ACFカスタムフィールド
+  acf?: {
+    thumbnail?: string | ACFImage; // サムネイル画像（URLまたはオブジェクト）
+    [key: string]: any; // その他のカスタムフィールド
   };
 }
 
