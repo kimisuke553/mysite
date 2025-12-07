@@ -1,14 +1,14 @@
-import { getPosts } from '@/lib/wordpress';
-import PostCard from '@/components/PostCard';
+import { getPosts } from '@/lib/wordpress'
+import PostCard from '@/components/PostCard'
 
 export default async function PostsPage() {
-  let posts;
-  let error = null;
+  let posts
+  let error = null
 
   try {
-    posts = await getPosts({ per_page: 20 });
+    posts = await getPosts({ per_page: 20 })
   } catch (e) {
-    error = e instanceof Error ? e.message : 'データの取得に失敗しました';
+    error = e instanceof Error ? e.message : 'データの取得に失敗しました'
   }
 
   return (
@@ -29,5 +29,5 @@ export default async function PostsPage() {
         <p className="loading">記事がありません</p>
       )}
     </div>
-  );
+  )
 }

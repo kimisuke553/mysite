@@ -1,111 +1,109 @@
 'use client'
+import Link from 'next/link'
+import { WordPressPost } from '@/types/wordpress'
 
-interface PostContentProps {
-  post: {
-    title: { rendered: string }
-    content: { rendered: string }
-    date: string
-    _embedded?: {
-      'wp:featuredmedia'?: Array<{ source_url: string }>
-      author?: Array<{ name: string }>
-    }
-  }
+interface PostCardProps {
+  post: WordPressPost
 }
 
-export default function PostContent({ post }: PostContentProps) {
-  const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url
-  const author = post._embedded?.author?.[0]?.name
+/**
+ * 投稿画像を取得する関数
+ * 優先順位: ACFサムネイル → アイキャッチ画像
+ */
+function getPostImage(post: WordPressPost): string | null {
+  // 1. ACFカスタムフィールドのサムネイル画像を優先
+  if (post.acf && typeof post.acf === 'object' && !Array.isArray(post.acf)) {
+    const thumbnail = (post.acf as any).thumbnail
+    if (thumbnail) {
+      if (typeof thumbnail === 'object' && thumbnail.url) {
+        return thumbnail.url
+      }
+      if (typeof thumbnail === 'string') {
+        return thumbnail
+      }
+    }
+  }
+
+  // 2. WordPressのアイキャッチ画像をフォールバック
+  return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null
+}
+
+export default function PostCard({ post }: PostCardProps) {
+  const postImage = getPostImage(post)
 
   return (
-    <article className="post-detail">
-      <div className="container">
-        {featuredImage && (
-          <div className="featured-image">
-            <img src={featuredImage} alt={post.title.rendered} />
+    <article className="post-card">
+      <Link href={`/posts/${post.slug}`} className="post-link">
+        {postImage && (
+          <div className="post-image">
+            <img src={postImage} alt={post.title.rendered} />
           </div>
         )}
 
-        <h1 dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+        <div className="post-content">
+          <h2 dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+          
+          <div 
+            className="post-excerpt"
+            dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} 
+          />
 
-        <div className="post-meta">
-          <time dateTime={post.date}>
+          <time dateTime={post.date} className="post-date">
             {new Date(post.date).toLocaleDateString('ja-JP', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
             })}
           </time>
-          {author && <span className="author">著者: {author}</span>}
         </div>
-
-        <div
-          className="post-content"
-          dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-        />
-      </div>
+      </Link>
 
       <style jsx>{`
-        .post-detail {
-          padding: 2rem 0;
-        }
-        .featured-image {
-          width: 100%;
-          max-height: 500px;
-          overflow: hidden;
-          margin-bottom: 2rem;
+        .post-card {
+          border: 1px solid #eaeaea;
           border-radius: 8px;
+          overflow: hidden;
+          transition: transform 0.2s, box-shadow 0.2s;
         }
-        .featured-image img {
+        .post-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .post-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+        }
+        .post-image {
+          width: 100%;
+          height: 200px;
+          overflow: hidden;
+        }
+        .post-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
-        .post-detail h1 {
-          font-size: 2.5rem;
-          margin-bottom: 1rem;
-          line-height: 1.3;
-        }
-        .post-meta {
-          display: flex;
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #eaeaea;
-          color: #666;
-          font-size: 0.9rem;
-        }
         .post-content {
-          background: #fff;
-          padding: 2rem;
-          border-radius: 8px;
-          line-height: 1.8;
+          padding: 1.5rem;
         }
-        .post-content :global(img) {
-          max-width: 100%;
-          height: auto;
-        }
-        .post-content :global(h2) {
-          font-size: 1.8rem;
-          margin: 2rem 0 1rem;
-        }
-        .post-content :global(h3) {
+        .post-content h2 {
           font-size: 1.5rem;
-          margin: 1.5rem 0 1rem;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
         }
-        .post-content :global(p) {
+        .post-excerpt {
+          color: #666;
           margin-bottom: 1rem;
+          line-height: 1.6;
         }
-        .post-content :global(pre) {
-          background: #f5f5f5;
-          padding: 1rem;
-          border-radius: 4px;
-          overflow-x: auto;
+        .post-excerpt :global(p) {
+          margin: 0;
         }
-        .post-content :global(code) {
-          background: #f5f5f5;
-          padding: 0.2rem 0.4rem;
-          border-radius: 3px;
-          font-family: 'Courier New', monospace;
+        .post-date {
+          display: block;
+          font-size: 0.875rem;
+          color: #999;
         }
       `}</style>
     </article>

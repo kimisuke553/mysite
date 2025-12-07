@@ -15,78 +15,83 @@ export interface ACFImage {
 }
 
 export interface WordPressPost {
-  id: number;
-  date: string;
-  modified: string;
-  slug: string;
-  status: string;
+  id: number
+  date: string
+  modified: string
+  slug: string
+  status: string
+  type: string
   title: {
-    rendered: string;
-  };
+    rendered: string
+  }
   content: {
-    rendered: string;
-  };
+    rendered: string
+  }
   excerpt: {
-    rendered: string;
-  };
+    rendered: string
+  }
+  featured_media: number
+  // ACFフィールドを追加
   acf?: {
-    custom_field_name: string;
-    // カスタムフィールドを追加
-  };
-  author: number;
-  featured_media: number;
-  categories: number[];
-  tags: number[];
+    thumbnail?: string | ACFImage
+    [key: string]: any  // その他のACFフィールド用
+  }
   _embedded?: {
     'wp:featuredmedia'?: Array<{
-      source_url: string;
-      alt_text: string;
-    }>;
+      source_url: string
+      alt_text: string
+    }>
     author?: Array<{
-      name: string;
-      avatar_urls?: {
-        [key: string]: string;
-      };
-    }>;
-  };
-  // ACFカスタムフィールド
-  acf?: {
-    thumbnail?: string | ACFImage; // サムネイル画像（URLまたはオブジェクト）
-    [key: string]: any; // その他のカスタムフィールド
-  };
+      id: number
+      name: string
+      url: string
+    }>
+  }
 }
-
 export interface WordPressPage {
-  id: number;
-  date: string;
-  slug: string;
+  id: number
+  date: string
+  modified: string
+  slug: string
+  status: string
+  type: string
   title: {
-    rendered: string;
-  };
+    rendered: string
+  }
   content: {
-    rendered: string;
-  };
-  featured_media: number;
+    rendered: string
+  }
+  excerpt: {
+    rendered: string
+  }
+  featured_media: number
+  parent: number
+  menu_order: number
   _embedded?: {
     'wp:featuredmedia'?: Array<{
-      source_url: string;
-      alt_text: string;
-    }>;
-  };
+      source_url: string
+      alt_text: string
+    }>
+  }
 }
 
 export interface WordPressCategory {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  count: number;
+  id: number
+  count: number
+  description: string
+  link: string
+  name: string
+  slug: string
+  taxonomy: string
+  parent: number
 }
 
 export interface WordPressTag {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  count: number;
+  id: number
+  count: number
+  description: string
+  link: string
+  name: string
+  slug: string
+  taxonomy: string
 }

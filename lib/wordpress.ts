@@ -3,6 +3,8 @@ import { WordPressPost, WordPressPage, WordPressCategory } from '@/types/wordpre
 // WordPress REST API のベースURL
 const WP_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'http://localhost/wp-json/wp/v2';
 
+export type { WordPressPost, WordPressPage, WordPressCategory };
+
 /**
  * WordPress REST APIからデータを取得
  */
@@ -35,7 +37,7 @@ export async function getPosts(params: {
   search?: string;
 } = {}): Promise<WordPressPost[]> {
   const defaultParams = {
-    _embed: 'true', // 埋め込みデータ(アイキャッチ画像など)を含める
+    _embed: true, // 真偽値に変更
     per_page: 10,
     ...params,
   };
@@ -49,7 +51,7 @@ export async function getPosts(params: {
 export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
   const posts = await fetchAPI('/posts', {
     slug,
-    _embed: 'true',
+    _embed: true,
   });
 
   return posts.length > 0 ? posts[0] : null;
@@ -59,14 +61,14 @@ export async function getPostBySlug(slug: string): Promise<WordPressPost | null>
  * IDから投稿を取得
  */
 export async function getPostById(id: number): Promise<WordPressPost> {
-  return fetchAPI(`/posts/${id}`, { _embed: 'true' });
+  return fetchAPI(`/posts/${id}`, { _embed: true });
 }
 
 /**
  * ページ一覧を取得
  */
 export async function getPages(): Promise<WordPressPage[]> {
-  return fetchAPI('/pages', { _embed: 'true' });
+  return fetchAPI('/pages', { _embed: true });
 }
 
 /**
@@ -75,7 +77,7 @@ export async function getPages(): Promise<WordPressPage[]> {
 export async function getPageBySlug(slug: string): Promise<WordPressPage | null> {
   const pages = await fetchAPI('/pages', {
     slug,
-    _embed: 'true',
+    _embed: true,
   });
 
   return pages.length > 0 ? pages[0] : null;
